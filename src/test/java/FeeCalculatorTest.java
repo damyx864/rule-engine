@@ -85,7 +85,23 @@ public class FeeCalculatorTest {
 
     @ParameterizedTest
     @EnumSource(TransactionType.class)
-    void testTiscoFinanceBefore10PMFee(TransactionType transactionType) {
+    void testTiscoFinanceBefore10PMFeeWithForeignExchange(TransactionType transactionType) {
+
+        LocalDateTime before10PM = LocalDateTime.of(LocalDate.now(), LocalTime.of(21, 59, 59, 999999999));
+        Transaction txnTT = new Transaction(transactionType, 7900, before10PM, true);
+        // 79 monetary units (pounds, dollars, euros... with subdivisions)
+
+        ProductDefinition tiscoFinanceProductDefinition = new TiscoFinanceProductDefinition(txnTT);
+
+        FeeCalculator fc = new FeeCalculatorImpl();
+
+        assertEquals(0, fc.calculateFee(txnTT, tiscoFinanceProductDefinition));
+        assertEquals("TISCO FINANCE", tiscoFinanceProductDefinition.getName());
+    }
+
+    @ParameterizedTest
+    @EnumSource(TransactionType.class)
+    void testTiscoFinanceBefore10PMFeeWithoutForeignExchange(TransactionType transactionType) {
 
         LocalDateTime before10PM = LocalDateTime.of(LocalDate.now(), LocalTime.of(21, 59, 59, 999999999));
         Transaction txnTT = new Transaction(transactionType, 7900, before10PM, false);
@@ -101,9 +117,26 @@ public class FeeCalculatorTest {
 
     @ParameterizedTest
     @EnumSource(TransactionType.class)
-    void testTiscoFinanceAfter10PMFee(TransactionType transactionType) {
+    void testTiscoFinanceAfter10PMFeeWithForeignExchange(TransactionType transactionType) {
 
-        LocalDateTime after10PM = LocalDateTime.of(LocalDate.now(), LocalTime.of(22, 00, 00));
+        LocalDateTime after10PM = LocalDateTime.of(LocalDate.now(), LocalTime.of(22, 0, 0));
+
+        Transaction txnTT = new Transaction(transactionType, 7900, after10PM, true);
+        // 79 monetary units (pounds, dollars, euros... with subdivisions)
+
+        ProductDefinition tiscoFinanceProductDefinition = new TiscoFinanceProductDefinition(txnTT);
+
+        FeeCalculator fc = new FeeCalculatorImpl();
+
+        assertEquals(395, fc.calculateFee(txnTT, tiscoFinanceProductDefinition));
+        assertEquals("TISCO FINANCE", tiscoFinanceProductDefinition.getName());
+    }
+
+    @ParameterizedTest
+    @EnumSource(TransactionType.class)
+    void testTiscoFinanceAfter10PMFeeWithoutForeignExchange(TransactionType transactionType) {
+
+        LocalDateTime after10PM = LocalDateTime.of(LocalDate.now(), LocalTime.of(22, 0, 0));
 
         Transaction txnTT = new Transaction(transactionType, 7900, after10PM, false);
         // 79 monetary units (pounds, dollars, euros... with subdivisions)
