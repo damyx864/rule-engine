@@ -1,6 +1,6 @@
-package com.rule_engine.types;
+package com.rulesengine.types;
 
-import com.rule_engine.products.ProductDefinition;
+import com.rulesengine.products.ProductDefinition;
 
 public interface ProductDefinitionStore {
 
