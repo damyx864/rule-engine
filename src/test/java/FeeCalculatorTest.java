@@ -88,15 +88,16 @@ public class FeeCalculatorTest {
     @EnumSource(TransactionType.class)
     void testTiscoFinanceBefore10PMFeeWithForeignExchange(TransactionType transactionType) {
 
-        LocalDateTime before10PM = LocalDateTime.of(LocalDate.now(), LocalTime.of(21, 59, 59, 999999999));
-        Transaction txnTT = new Transaction(transactionType, 7900, before10PM, true);
+        LocalDateTime before10PM = LocalDateTime.of(
+                LocalDate.now(), LocalTime.of(21, 59, 59, 999999999));
+        Transaction txnTT = new Transaction(transactionType, BigDecimal.valueOf(79), before10PM, true);
         // 79 monetary units (pounds, dollars, euros... with subdivisions)
 
         ProductDefinition tiscoFinanceProductDefinition = new TiscoFinanceProductDefinition(txnTT);
 
         FeeCalculator fc = new FeeCalculatorImpl();
 
-        assertEquals(0, fc.calculateFee(txnTT, tiscoFinanceProductDefinition));
+        assertEquals(BigDecimal.ZERO, fc.calculateFee(txnTT, tiscoFinanceProductDefinition));
         assertEquals("TISCO FINANCE", tiscoFinanceProductDefinition.getName());
     }
 
@@ -104,7 +105,8 @@ public class FeeCalculatorTest {
     @EnumSource(TransactionType.class)
     void testTiscoFinanceBefore10PMFeeWithoutForeignExchange(TransactionType transactionType) {
 
-        LocalDateTime before10PM = LocalDateTime.of(LocalDate.now(), LocalTime.of(21, 59, 59, 999999999));
+        LocalDateTime before10PM = LocalDateTime.of(
+                LocalDate.now(), LocalTime.of(21, 59, 59, 999999999));
         Transaction txnTT = new Transaction(transactionType, BigDecimal.valueOf(79), before10PM, false);
         // 79 monetary units (pounds, dollars, euros... with subdivisions)
 
@@ -122,14 +124,14 @@ public class FeeCalculatorTest {
 
         LocalDateTime after10PM = LocalDateTime.of(LocalDate.now(), LocalTime.of(22, 0, 0));
 
-        Transaction txnTT = new Transaction(transactionType, 7900, after10PM, true);
+        Transaction txnTT = new Transaction(transactionType, BigDecimal.valueOf(79), after10PM, true);
         // 79 monetary units (pounds, dollars, euros... with subdivisions)
 
         ProductDefinition tiscoFinanceProductDefinition = new TiscoFinanceProductDefinition(txnTT);
 
         FeeCalculator fc = new FeeCalculatorImpl();
 
-        assertEquals(395, fc.calculateFee(txnTT, tiscoFinanceProductDefinition));
+        assertEquals(BigDecimal.valueOf(395, 2), fc.calculateFee(txnTT, tiscoFinanceProductDefinition));
         assertEquals("TISCO FINANCE", tiscoFinanceProductDefinition.getName());
     }
 
